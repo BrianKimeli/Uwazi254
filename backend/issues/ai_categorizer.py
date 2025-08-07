@@ -1,4 +1,4 @@
-# ai/categorize_issue.py
+# categorize_issue.py
 
 import os
 from dotenv import load_dotenv

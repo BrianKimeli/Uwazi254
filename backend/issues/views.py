@@ -1,4 +1,4 @@
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,6 +10,12 @@ from .serializers import (
     AdminResponseCreateSerializer, InternalNoteCreateSerializer
 )
 from .filters import IssueFilter
+
+
+class IssueViewSet(viewsets.ModelViewSet):
+    queryset = Issue.objects.all()
+    serializer_class = IssueSerializer
+
 
 class IssueListCreateView(generics.ListCreateAPIView):
     queryset = Issue.objects.all()
@@ -188,3 +194,25 @@ class MyIssuesView(generics.ListAPIView):
     
     def get_queryset(self):
         return Issue.objects.filter(submitted_by=self.request.user)
+    
+    
+from rest_framework.views import APIView
+
+class CategorizeIssueView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        description = request.data.get("description", "")
+
+        if not description:
+            return Response({"error": "Description is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Dummy categorization logic (replace with AI later)
+        if "health" in description.lower():
+            category = "Health"
+        elif "road" in description.lower():
+            category = "Infrastructure"
+        else:
+            category = "Other"
+
+        return Response({"category": category}, status=status.HTTP_200_OK)

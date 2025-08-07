@@ -11,6 +11,7 @@ from django.http import JsonResponse
 # Uwazi254 Backend URL Configuration
 
 urlpatterns = [
+    
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
     path('api/issues/', include('issues.urls')),
