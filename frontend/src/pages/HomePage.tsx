@@ -44,14 +44,14 @@ const HomePage: React.FC = () => {
               Your voice matters. Report community issues and track their resolution 
               in real-time. Together, we build better communities.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/report">
-                <Button size="lg" className="bg-blue text-blue-600 hover:bg-blue-50">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/report" className="flex justify-center sm:justify-start">
+                <Button size="lg" className="text-blue-600 bg-blue hover:bg-blue-50">
                   <Plus className="h-5 w-5" />
                   Report an Issue
                 </Button>
               </Link>
-              <Link to="/issues">
+              <Link to="/issues" className="flex justify-center sm:justify-start">
                 <Button variant="ghost" size="lg" className="text-white border-white hover:bg-white/10">
                   <Eye className="h-5 w-5" />
                   Browse Issues
