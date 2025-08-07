@@ -19,6 +19,7 @@ import Button from '../components/ui/Button';
 import IssueCard from '../components/issues/IssueCard';
 import StatsCard from '../components/analytics/StatsCard';
 
+
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { issues, upvoteIssue, downvoteIssue } = useIssues();
@@ -35,25 +36,26 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
               Welcome to Uwazi254
             </h1>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Your voice matters. Report community issues and track their resolution 
-              in real-time. Together, we build better communities.
+            
+            <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto"> 
+              Your voice matters. Report community issues and track their resolution.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/report" className="flex justify-center sm:justify-start">
-                <Button size="lg" className="text-blue-600 bg-blue hover:bg-blue-50">
-                  <Plus className="h-5 w-5" />
+            
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center"> 
+              <Link to="/report">
+                <Button size="md" className="text-blue-600 bg-blue hover:bg-blue-50 px-4 py-2 sm:px-6 sm:py-3">
+                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" /> 
                   Report an Issue
                 </Button>
               </Link>
-              <Link to="/issues" className="flex justify-center sm:justify-start">
-                <Button variant="ghost" size="lg" className="text-white border-white hover:bg-white/10">
-                  <Eye className="h-5 w-5" />
+              <Link to="/issues">
+                <Button variant="ghost" size="md" className="text-white border-white hover:bg-white/10 px-4 py-2 sm:px-6 sm:py-3"> 
+                  <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                   Browse Issues
                 </Button>
               </Link>
