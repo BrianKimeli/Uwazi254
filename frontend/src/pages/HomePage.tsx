@@ -46,7 +46,7 @@ const HomePage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/report">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+                <Button size="lg" className="bg-blue text-blue-600 hover:bg-blue-50">
                   <Plus className="h-5 w-5" />
                   Report an Issue
                 </Button>
