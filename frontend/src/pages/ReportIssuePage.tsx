@@ -191,14 +191,6 @@ const ReportIssuePage: React.FC = () => {
                 required
               />
 
-              <Select
-                label="Category"
-                value={formData.category}
-                onChange={(value) => setFormData({...formData, category: value})}
-                options={categoryOptions}
-                required
-              />
-
               <Input
                 label="Specific Location (Optional)"
                 value={formData.location}
