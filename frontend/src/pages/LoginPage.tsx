@@ -28,12 +28,11 @@ const LoginPage: React.FC = () => {
 
   const demoAccounts = [
     { email: 'john@citizen.com', password: 'password', role: 'Citizen' },
-    { email: 'admin@kiambu.gov.ke', password: 'password', role: 'Admin' },
-    { email: 'moderator@uwazi254.com', password: 'password', role: 'Moderator' }
+    { email: 'admin@homabay.gov.ke', password: 'password', role: 'Admin' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-700 to-blue-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-800 via-green-600 to-green-400 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -97,6 +96,14 @@ const LoginPage: React.FC = () => {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <a href="/register" className="text-blue-600 hover:underline">
+                Sign Up
+              </a>
+            </p>
+          </div>
 
           {/* Demo Accounts */}
           <div className="mt-8 pt-6 border-t border-gray-200">
