@@ -254,7 +254,7 @@ const HomePage: React.FC = () => {
       {/* Chatbot FAB */}
       <button
         onClick={() => setIsChatbotOpen(true)}
-        className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg z-50"
+        className="fixed bottom-20 sm:bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg z-50"
       >
         <MessageCircle className="h-6 w-6" />
       </button>
