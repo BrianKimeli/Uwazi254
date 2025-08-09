@@ -22,7 +22,7 @@ export const useAuth = () => {
 const mockUsers: User[] = [
   {
     id: '1',
-    name: 'John Mwangi',
+    name: 'John Omollo',
     email: 'john@citizen.com',
     phone: '+254 712 345 678',
     role: 'citizen',
@@ -33,8 +33,8 @@ const mockUsers: User[] = [
   },
   {
     id: '2',
-    name: 'Mary Wanjiku',
-    email: 'admin@kiambu.gov.ke',
+    name: 'Lydia Achieng',
+    email: 'admin@homabay.gov.ke',
     phone: '+254 720 123 456',
     role: 'admin',
     county: 'Kiambu',
