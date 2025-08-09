@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import RegisterPage from './pages/RegisterPage';
+import ChatbotWidget from './components/chatbot/ChatbotWidget';
 
 const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
@@ -50,6 +51,7 @@ const AppContent: React.FC = () => {
               <Route path="/issues" element={<IssuesPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/chatbot" element={<ChatbotWidget />} />
               {user.role === 'admin' && (
                 <Route path="/admin" element={<AdminDashboard />} />
               )}
