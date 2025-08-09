@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { 
   Plus, 
   MessageSquare, 
@@ -10,7 +10,8 @@ import {
   Eye,
   Star,
   Users,
-  MapPin
+  MapPin,
+  MessageCircle // FAB icon
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useIssues } from '../contexts/IssueContext';
@@ -18,11 +19,14 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import IssueCard from '../components/issues/IssueCard';
 import StatsCard from '../components/analytics/StatsCard';
-
+import ChatbotWidget from '../components/chatbot/ChatbotWidget';
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { issues, upvoteIssue, downvoteIssue } = useIssues();
+  const navigate = useNavigate();
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
 
   const totalIssues = issues.length;
   const resolvedIssues = issues.filter(i => i.status === 'resolved').length;
@@ -33,7 +37,8 @@ const HomePage: React.FC = () => {
   const recentIssues = issues.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-green-500 to-green-800 text-white">
         <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
@@ -245,6 +250,18 @@ const HomePage: React.FC = () => {
           </div>
         </Card>
       </div>
+
+      {/* Chatbot FAB */}
+      <button
+        onClick={() => setIsChatbotOpen(true)}
+        className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg z-50"
+      >
+        <MessageCircle className="h-6 w-6" />
+      </button>
+            {isChatbotOpen && (
+        <ChatbotWidget onClose={() => setIsChatbotOpen(false)} />
+      )}
+
     </div>
   );
 };
