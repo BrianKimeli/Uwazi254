@@ -28,8 +28,8 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ onClose }) => {
 
   return (
     <div className="fixed bottom-20 right-6 bg-white shadow-2xl rounded-2xl flex flex-col border border-gray-200 z-50
-                    w-80 sm:w-96 lg:w-[20rem] max-h-[120vh]">
-      
+                    w-80 sm:w-96 lg:w-[28rem] max-h-[100vh]">
+                        
       {/* Header */}
       <div className="flex items-center justify-between bg-green-600 text-white px-4 py-3 rounded-t-2xl">
         <span className="font-semibold">Uwazi254 AI Assistant</span>
