@@ -64,7 +64,7 @@ const IssueFilters: React.FC<IssueFiltersProps> = ({
 
   const countyOptions = [
     { value: 'all', label: 'All Counties' },
-    { value: 'Kiambu', label: 'Kiambu' },
+    { value: 'Homabay', label: 'Homabay' },
     { value: 'Nairobi', label: 'Nairobi' },
     { value: 'Nakuru', label: 'Nakuru' },
     { value: 'Mombasa', label: 'Mombasa' },
