@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-400 to-green-800 text-white">
+      <div className="bg-gradient-to-r from-green-500 to-green-800 text-white">
         <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
           <div className="text-center space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
