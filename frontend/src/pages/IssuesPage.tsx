@@ -97,7 +97,7 @@ const IssuesPage: React.FC = () => {
           )}
         </div>
 
-        {/* Load More (if needed) */}
+        {/* Load More */}
         {filteredIssues.length > 0 && filteredIssues.length < issues.length && (
           <div className="text-center mt-8">
             <button className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors">
