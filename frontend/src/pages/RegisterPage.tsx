@@ -1,53 +1,54 @@
 import React, { useState } from 'react';
-import { MessageSquare, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { MessageSquare, Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
 import { Link } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
-  const { login } = useAuth();
+const RegisterPage: React.FC = () => {
+  const { register } = useAuth();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
     try {
-      await login(email, password);
+      await register(name, email, password);
     } catch (err) {
-      setError('Invalid email or password');
+      setError('Failed to create account');
     } finally {
       setLoading(false);
     }
   };
 
-  const demoAccounts = [
-    { email: 'john@citizen.com', password: 'password', role: 'Citizen' },
-    { email: 'admin@homabay.gov.ke', password: 'password', role: 'Admin' },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-800 via-green-600 to-green-400 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        {/* Logo and Title */}
+        {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="bg-white p-4 rounded-2xl inline-block mb-4 shadow-lg">
             <MessageSquare className="h-12 w-12 text-blue-600" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">Uwazi254</h1>
-          <p className="text-blue-100">Citizen Feedback & Transparency Platform</p>
+          <p className="text-blue-100">Join the Citizen Feedback & Transparency Platform</p>
         </div>
 
-        {/* Login Form */}
+        {/* Register Form */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Welcome Back
+            Create Account
           </h2>
 
           {error && (
@@ -57,6 +58,18 @@ const LoginPage: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -88,47 +101,35 @@ const LoginPage: React.FC = () => {
               </button>
             </div>
 
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
             <Button
               type="submit"
               fullWidth
               size="lg"
               disabled={loading}
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Creating account...' : 'Sign Up'}
             </Button>
           </form>
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:underline">
-                Sign Up
+              Already have an account?{' '}
+              <Link to="/login" className="text-blue-600 hover:underline">
+                Sign In
               </Link>
             </p>
-          </div>
-
-          {/* Demo Accounts */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 mb-4 text-center">Demo Accounts:</p>
-            <div className="space-y-2">
-              {demoAccounts.map((account, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setEmail(account.email);
-                    setPassword(account.password);
-                  }}
-                  className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{account.role}</p>
-                      <p className="text-xs text-gray-600">{account.email}</p>
-                    </div>
-                    <span className="text-xs text-blue-600 font-medium">Click to use</span>
-                  </div>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -143,4 +144,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

@@ -12,6 +12,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
+import RegisterPage from './pages/RegisterPage';
 
 const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
@@ -36,6 +37,7 @@ const AppContent: React.FC = () => {
       {!user ? (
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       ) : (
