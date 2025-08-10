@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Camera,
@@ -21,6 +21,8 @@ const ReportIssuePage: React.FC = () => {
   const { addIssue } = useIssues();
   const navigate = useNavigate();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     title: '',
@@ -31,7 +33,9 @@ const ReportIssuePage: React.FC = () => {
     ward: user?.ward || 'Kaksingri North',
     location: '',
     severity: 'medium',
-    anonymous: false
+    anonymous: false,
+    photoFile: null as File | null,    // <-- Added photoFile to store selected file
+    photoPreview: null as string | null // <-- Added photoPreview for preview URL
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -48,6 +52,25 @@ const ReportIssuePage: React.FC = () => {
     { value: 'environment', label: '🌱 Environment' },
     { value: 'housing', label: '🏠 Housing' }
   ];
+
+  const fineGrainedFallbacks: Record<string, string> = {
+    pothole: 'roads',
+    tarmac: 'roads',
+    drainage: 'water',
+    sewer: 'water',
+    clinic: 'health',
+    hospital: 'health',
+    crime: 'security',
+    theft: 'security',
+    bribe: 'corruption',
+    mismanagement: 'corruption',
+    school: 'education',
+    teacher: 'education',
+    pollution: 'environment',
+    deforestation: 'environment',
+    rent: 'housing',
+    eviction: 'housing'
+  };
 
   const severityOptions = [
     { value: 'low', label: 'Low - Can wait' },
@@ -72,70 +95,88 @@ const ReportIssuePage: React.FC = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const categorizeWithGemini = async (title: string, description: string) => {
-    const prompt = `
-You are an AI that categorizes public issue reports into exactly one of these categories:
-roads, water, health, security, corruption, education, environment, housing.
-Return ONLY the lowercase category name, nothing else.
+  // 🧠 AI Categorization with Hugging Face Zero-Shot Classification
+  const categorizeWithHuggingFace = async (title: string, description: string) => {
+    const apiKey = import.meta.env.VITE_HF_API_KEY;
+    if (!apiKey) {
+      console.error("❌ Missing Hugging Face API key");
+      return 'roads';
+    }
 
-Title: ${title}
-Description: ${description}
-    `;
+    const candidateCategories = categoryOptions.map(c => c.value);
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) {
-        console.error("❌ No API key found in VITE_GEMINI_API_KEY");
-        return 'roads';
-      }
-
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-1b-it:generateContent?key=${apiKey}`,
+        "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
+            inputs: `${title}\n\n${description}`,
+            parameters: {
+              candidate_labels: candidateCategories,
+              multi_label: false
+            }
           })
         }
       );
 
       const data = await res.json();
-      console.log("📦 Gemini API Response:", data);
+      console.log("📦 HF Classification Response:", data);
 
-      const aiText =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
-        data?.candidates?.[0]?.output || '';
+      // Main AI match
+      let aiCategory = data?.labels?.[0]?.toLowerCase();
 
-      if (!aiText) {
-        console.warn("⚠️ No category returned from Gemini");
-        return 'roads';
+      // ✅ If AI returned a valid category
+      if (aiCategory && candidateCategories.includes(aiCategory)) {
+        return aiCategory;
       }
 
-      const normalized = aiText.toLowerCase().replace(/[^a-z]/g, '');
-      const match = categoryOptions.find(c => normalized.includes(c.value));
-
-      if (!match) {
-        console.warn(`⚠️ Unknown category "${normalized}", defaulting to roads`);
-        return 'roads';
+      // 🔍 Check fine-grained fallback keywords
+      const combinedText = `${title} ${description}`.toLowerCase();
+      for (const keyword in fineGrainedFallbacks) {
+        if (combinedText.includes(keyword)) {
+          return fineGrainedFallbacks[keyword];
+        }
       }
 
-      return match.value;
+      console.warn("⚠️ Could not categorize, defaulting to 'roads'");
+      return 'roads';
+
     } catch (err) {
-      console.error("💥 Gemini request failed:", err);
+      console.error("💥 Hugging Face request failed:", err);
       return 'roads';
     }
+  };
+  const determineSeverity = (title: string, description: string) => {
+    const text = `${title} ${description}`.toLowerCase();
+
+    if (text.includes("emergency") || text.includes("critical") || text.includes("collapse") || text.includes("attack") || text.includes("dead") || text.includes("injured")) {
+      return "critical"
+    }
+    if (text.includes("urgent") || text.includes("severe") || text.includes("danger") || text.includes("unsafe") || text.includes("accident")) {
+      return "high";
+    }
+    if (text.includes("minor") || text.includes("small issue") || text.includes("slight")) {
+      return "low";
+    }
+    return "medium";
   };
 
   const handleSubmit = async () => {
     setSubmitting(true);
 
-    const aiCategory = await categorizeWithGemini(formData.title, formData.description);
-    console.log("✅ Final category from AI:", aiCategory);
+    const aiCategory = await categorizeWithHuggingFace(formData.title, formData.description);
+    const aiSeverity = determineSeverity(formData.title, formData.description);
+
+    const updatedFormData = { ...formData, category: aiCategory, severity: aiSeverity };
+    setFormData(updatedFormData);
 
     addIssue({
-      ...formData,
-      category: aiCategory,
+      ...updatedFormData,
       submittedBy: user?.id || '1',
       status: 'open'
     });
@@ -148,13 +189,53 @@ Description: ${description}
     }, 3000);
   };
 
+
   const isStepValid = () => {
     switch (currentStep) {
-      case 1: return formData.title;
-      case 2: return formData.description && formData.severity;
+      case 1: return formData.title.trim().length > 0;
+      case 2: return formData.description.trim().length > 0 && formData.severity;
       case 3: return formData.county && formData.constituency && formData.ward;
       default: return false;
     }
+  };
+
+  // Handler to open file picker when Add Photo clicked
+  const handleAddPhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handler to update state on file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const photoURL = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        photoFile: file,
+        photoPreview: photoURL
+      }));
+    }
+  };
+
+  // Handler for using GPS to set location
+  const handleUseGPS = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setFormData(prev => ({
+          ...prev,
+          location: `Lat: ${latitude.toFixed(5)}, Lon: ${longitude.toFixed(5)}`
+        }));
+      },
+      (err) => {
+        alert(`Error getting location: ${err.message}`);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
 
   if (submitted) {
@@ -205,9 +286,31 @@ Description: ${description}
               <Input label="Issue Title" value={formData.title} onChange={(value) => setFormData({...formData, title: value})} placeholder="Brief description" required />
               <Input label="Specific Location (Optional)" value={formData.location} onChange={(value) => setFormData({...formData, location: value})} placeholder="e.g., Near market" />
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="secondary" className="flex-1"><Camera className="h-4 w-4" /> Add Photo</Button>
-                <Button variant="secondary" className="flex-1"><MapPin className="h-4 w-4" /> Use GPS</Button>
+                <Button variant="secondary" className="flex-1" onClick={handleAddPhotoClick}>
+                  <Camera className="h-4 w-4" /> Add Photo
+                </Button>
+                <Button variant="secondary" className="flex-1" onClick={handleUseGPS}>
+                  <MapPin className="h-4 w-4" /> Use GPS
+                </Button>
               </div>
+
+              {/* Hidden file input for photo upload */}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+
+              {/* Preview selected photo */}
+              {formData.photoPreview && (
+                <img
+                  src={formData.photoPreview}
+                  alt="Preview"
+                  className="mt-4 max-h-48 rounded-lg object-cover"
+                />
+              )}
             </div>
           )}
 
